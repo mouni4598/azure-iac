@@ -55,3 +55,75 @@ resource "azurerm_linux_virtual_machine" "vm" {
     storage_account_uri = null
   }
 }
+resource "azurerm_network_security_group" "vm_nsg" {
+  name                = "${var.vm_name}-nsg"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  security_rule {
+    name                       = "AllowSSH"
+    priority                   = 300
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+  }
+  
+  security_rule {
+    name                       = "AllowAnyCustom443Inbound"
+    priority                   = 302
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+  }
+
+  security_rule {
+    name                       = "AllowAnyCustom80Inbound"
+    priority                   = 303
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+  }
+
+  security_rule {
+    name                       = "AllowAnyCustom15672Inbound"
+    priority                   = 310
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    source_port_range          = "*"
+    destination_port_range     = "15672"
+  }
+
+  security_rule {
+    name                       = "AllowAnyCustom81Inbound"
+    priority                   = 320
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    source_port_range          = "*"
+    destination_port_range     = "81"
+  }
+
+ 
+}
+
+resource "azurerm_network_interface_security_group_association" "vm_nic_assoc" {
+  network_interface_id      = azurerm_network_interface.vm_nic.id
+  network_security_group_id = azurerm_network_security_group.vm_nsg.id
+}

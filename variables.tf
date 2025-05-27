@@ -62,10 +62,26 @@ variable "admin_password" {
   type        = string
 }
 variable "managed_identity_principal_id" {
-  type = string
+  type        = string
   description = "The principal ID of the managed identity"
 }
 variable "tenant_id" {
   description = "The tenant ID for the Key Vault"
   type        = string
 }
+variable "appgw_name" {
+  description = "The name of the Application Gateway"
+  type        = string
+  default     = "arc-test-gateway"
+}
+
+variable "appgw_public_ip_name" {
+  description = "The name of the Public IP for Application Gateway"
+  type        = string
+  default     = "arc-test-gateway-ip"
+}
+
+
+
+
+

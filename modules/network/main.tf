@@ -18,3 +18,17 @@ resource "azurerm_subnet" "appgw_subnet" {
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = [var.appgw_subnet_prefix]
 }
+# Private DNS Zone for Azure SQL
+resource "azurerm_private_dns_zone" "sql" {
+  name                = "privatelink.database.windows.net"
+  resource_group_name = var.resource_group_name
+}
+
+# Link the DNS zone to the VNet
+resource "azurerm_private_dns_zone_virtual_network_link" "sql_link" {
+  name                  = "sql-vnet-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.sql.name
+  virtual_network_id    = azurerm_virtual_network.main.id
+  registration_enabled  = false
+}

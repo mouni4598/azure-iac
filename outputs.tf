@@ -13,3 +13,12 @@ output "appgw_subnet_id" {
   value       = module.network.appgw_subnet_id
 }
 
+output "appgw_id" {
+  description = "The ID of the Application Gateway"
+  value       = module.application_gateway.appgw_id
+}
+
+output "appgw_public_ip" {
+  description = "The public IP address of the Application Gateway"
+  value       = module.application_gateway.appgw_public_ip
+}

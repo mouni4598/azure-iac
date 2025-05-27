@@ -40,3 +40,29 @@ module "key_vault" {
   managed_identity_principal_id = module.managed_identity.principal_id
   tenant_id                     = data.azurerm_client_config.current.tenant_id
 }
+module "application_gateway" {
+  source              = "./modules/app-gateway"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = module.network.appgw_subnet_id
+  vm_private_ip       = module.vm.private_ip_address
+
+  appgw_name           = var.appgw_name
+  appgw_public_ip_name = var.appgw_public_ip_name
+}
+resource "azurerm_network_interface_application_gateway_backend_address_pool_association" "vm_appgw_assoc" {
+  network_interface_id    = module.vm.nic_id
+  ip_configuration_name   = "internal"
+  backend_address_pool_id = module.application_gateway.backend_address_pool_id
+}
+
+module "sql_server" {
+  source              = "./modules/sql-server"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = var.location
+  admin_username      = var.admin_username
+  admin_password      = var.admin_password
+  subnet_id           = module.network.vm_subnet_id
+}
+
+
