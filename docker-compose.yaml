@@ -1,0 +1,220 @@
+version: '3.8'
+
+services:
+  arc-platform:
+    image: 547873849115.dkr.ecr.us-east-1.amazonaws.com/arc-portal-standalone:20250527.10
+    container_name: arc-platform
+    ports:
+      - "80:80"
+      - "81:81"
+    environment:
+      # [Required]
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - ASPNETCORE_URLS=http://*:80;http://*:81
+      - MSSqlConfiguration__DatabaseServerName=arc-onprem-sqlserver.privatelink.database.windows.net
+      - MSSqlConfiguration__ARCDatabaseName=arc-sqlserver-test
+      - MSSqlConfiguration__DatabaseUserName=azureuser
+      - MSSqlConfiguration__DatabaseUserPassword=@Arconprem#test
+      - MSSqlConfiguration__UseTrustedConnection=false
+      - ServiceBusConfiguration__ServiceBusType=RabbitMQ
+      - ServiceBusConfiguration__RabbitMQUrl=amqp://admin:StrongPassword123@rabbitmq:5672
+      - ServiceBusConfiguration__RabbitMQUserName=admin
+      - ServiceBusConfiguration__RabbitMQPassword=StrongPassword123
+      - SmtpServiceConfiguration__SmtpServerName=email-smtp.us-east-1.amazonaws.com
+      - SmtpServiceConfiguration__SmtpPort=465
+      - SmtpServiceConfiguration__SmtpUserName=AKIAX7D6TP4NRWRE4GFA
+      - SmtpServiceConfiguration__SmtpPassword=BEDqZ8EfUYy3jE82px6eZs3KHPoDmZJafiwNI2EVffMp
+      - SmtpServiceConfiguration__SmtpSenderAddress=no-reply@arc.tpgi.com
+      - SmtpServiceConfiguration__UseSmtp=true
+      - AppSettings__DeploymentType=OnPremise
+      - WorkersConfiguration__WebApplicationRootURL=https://onprem-arc.com
+      - AppSettings__ServicesInternalBaseUrl=http://127.0.0.1:81
+      - AppSettings__EncryptionServiceSecret=QejfCUycW7VMqMem62rX3mow3kJM5Qa7
+      - WorkersConfiguration__SessionRunnerHostingModel=InProcess
+      - OpenId__Authority=https://login.microsoftonline.com/19e1ac19-f1a1-4b46-b5f7-5d2202c130fb/v2.0
+      - OpenId__ClientId=b5079190-7cd0-4c85-b83a-0b11982dcf4a
+      - OpenId__ClientSecret=dRc8Q~8Dme~DrXZQkMQwOOu7gsrDNurOvC4rFctx
+      - OpenId__Scopes__0=openid
+      - OpenId__Scopes__1=profile
+      - OpenId__Scopes__2=email
+      # [Recommended]
+      - OpenId__RequireHttpsMetadata=false
+      - OpenId__Claims__Role=roles
+      - AppSettings__ApplicationBaseUrl=https://onprem-arc.com
+      - AppSettings__ExternalLinksDisabled=false
+      - AppSettings__EnableClientCertificateSupport=true
+      - WorkersConfiguration__MaxConcurrentSessions=4
+      - Serilog__MinimumLevel__Default=Information
+      - Serilog__MinimumLevel__Override__Microsoft=Warning
+      - Serilog__MinimumLevel__Override__System=Warning
+      - Serilog__Using__0=Serilog.Sinks.File
+      - Serilog__WriteTo__0__Name=File
+      - Serilog__WriteTo__0__Args__path=/logs/arc-platform.log
+      - Serilog__WriteTo__0__Args__rollingInterval=Day
+      - Serilog__WriteTo__0__Args__rollOnFileSizeLimit=true
+      # [Not ARC]
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+    volumes:
+      - arc-artifacts:/artifacts
+      - ./logs:/logs
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - arc-network
+
+  console-host:
+    image: 547873849115.dkr.ecr.us-east-1.amazonaws.com/arc-console-host:20250527.10
+    container_name: arc-console-host
+    restart: on-failure
+    environment:
+      # [Required]
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - ASPNETCORE_URLS=http://*:80;http://*:81
+      - MSSqlConfiguration__DatabaseServerName=arc-onprem-sqlserver.privatelink.database.windows.net
+      - MSSqlConfiguration__ARCDatabaseName=arc-sqlserver-test
+      - MSSqlConfiguration__DatabaseUserName=azureuser
+      - MSSqlConfiguration__DatabaseUserPassword=@Arconprem#test
+      - MSSqlConfiguration__UseTrustedConnection=false
+      - ServiceBusConfiguration__ServiceBusType=RabbitMQ
+      - ServiceBusConfiguration__RabbitMQUrl=amqp://admin:StrongPassword123@rabbitmq:5672
+      - ServiceBusConfiguration__RabbitMQUserName=admin
+      - ServiceBusConfiguration__RabbitMQPassword=StrongPassword123
+      - SmtpServiceConfiguration__SmtpServerName=email-smtp.us-east-1.amazonaws.com
+      - SmtpServiceConfiguration__SmtpPort=465
+      - SmtpServiceConfiguration__SmtpUserName=AKIAX7D6TP4NRWRE4GFA
+      - SmtpServiceConfiguration__SmtpPassword=BEDqZ8EfUYy3jE82px6eZs3KHPoDmZJafiwNI2EVffMp
+      - SmtpServiceConfiguration__SmtpSenderAddress=no-reply@arc.tpgi.com
+      - SmtpServiceConfiguration__UseSmtp=true
+      - AppSettings__DeploymentType=OnPremise
+      - WorkersConfiguration__WebApplicationRootURL=https://onprem-arc.com
+      - AppSettings__ServicesInternalBaseUrl=http://127.0.0.1:81
+      - AppSettings__EncryptionServiceSecret=QejfCUycW7VMqMem62rX3mow3kJM5Qa7
+      - WorkersConfiguration__SessionRunnerHostingModel=InProcess
+      - OpenId__Authority=https://login.microsoftonline.com/19e1ac19-f1a1-4b46-b5f7-5d2202c130fb/v2.0
+      - OpenId__ClientId=b5079190-7cd0-4c85-b83a-0b11982dcf4a
+      - OpenId__ClientSecret=dRc8Q~8Dme~DrXZQkMQwOOu7gsrDNurOvC4rFctx
+      - OpenId__Scopes__0=openid
+      - OpenId__Scopes__1=profile
+      - OpenId__Scopes__2=email
+      # [Recommended]
+      - AppSettings__ApplicationBaseUrl=https://onprem-arc.com
+      - AppSettings__ExternalLinksDisabled=false
+      - AppSettings__EnableClientCertificateSupport=true
+      - WorkersConfiguration__MaxConcurrentSessions=4
+      - Serilog__MinimumLevel__Default=Information
+      - Serilog__MinimumLevel__Override__Microsoft=Warning
+      - Serilog__MinimumLevel__Override__System=Warning
+      - Serilog__Using__0=Serilog.Sinks.File
+      - Serilog__WriteTo__0__Name=File
+      - Serilog__WriteTo__0__Args__path=/logs/arc-console-host.log
+      - Serilog__WriteTo__0__Args__rollingInterval=Day
+      - Serilog__WriteTo__0__Args__rollOnFileSizeLimit=true
+      # [Not ARC]
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+    volumes:
+      - arc-artifacts:/artifacts
+      - ./logs:/logs
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - arc-network
+
+  service-broker:
+    image: 547873849115.dkr.ecr.us-east-1.amazonaws.com/arc-service-broker:20250527.10
+    container_name: arc-service-broker
+    deploy:
+      replicas: 1
+    environment:
+      # [Required]
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - ASPNETCORE_URLS=http://*:80;http://*:81
+      - MSSqlConfiguration__DatabaseServerName=arc-onprem-sqlserver.privatelink.database.windows.net
+      - MSSqlConfiguration__ARCDatabaseName=arc-sqlserver-test
+      - MSSqlConfiguration__DatabaseUserName=azureuser
+      - MSSqlConfiguration__DatabaseUserPassword=@Arconprem#test
+      - MSSqlConfiguration__UseTrustedConnection=false
+      - SagaDatabaseConfiguration__DatabaseServerName=arc-onprem-sqlserver.privatelink.database.windows.net
+      - SagaDatabaseConfiguration__ARCDatabaseName=arc-saga-test
+      - SagaDatabaseConfiguration__DatabaseUserName=azureuser
+      - SagaDatabaseConfiguration__DatabaseUserPassword=@Arconprem#test
+      - SagaDatabaseConfiguration__UseTrustedConnection=false
+      - ServiceBusConfiguration__ServiceBusType=RabbitMQ
+      - ServiceBusConfiguration__RabbitMQUrl=amqp://admin:StrongPassword123@rabbitmq:5672
+      - ServiceBusConfiguration__RabbitMQUserName=admin
+      - ServiceBusConfiguration__RabbitMQPassword=StrongPassword123
+      - SmtpServiceConfiguration__SmtpServerName=email-smtp.us-east-1.amazonaws.com
+      - SmtpServiceConfiguration__SmtpPort=465
+      - SmtpServiceConfiguration__SmtpUserName=AKIAX7D6TP4NRWRE4GFA
+      - SmtpServiceConfiguration__SmtpPassword=BEDqZ8EfUYy3jE82px6eZs3KHPoDmZJafiwNI2EVffMp
+      - SmtpServiceConfiguration__SmtpSenderAddress=no-reply@arc.tpgi.com
+      - SmtpServiceConfiguration__UseSmtp=true
+      - AppSettings__DeploymentType=OnPremise
+      - WorkersConfiguration__WebApplicationRootURL=https://onprem-arc.com
+      - AppSettings__ServicesInternalBaseUrl=http://127.0.0.1:81
+      - AppSettings__EncryptionServiceSecret=QejfCUycW7VMqMem62rX3mow3kJM5Qa7
+      - WorkersConfiguration__SessionRunnerHostingModel=InProcess
+      - OpenId__Authority=https://login.microsoftonline.com/19e1ac19-f1a1-4b46-b5f7-5d2202c130fb/v2.0
+      - OpenId__ClientId=b5079190-7cd0-4c85-b83a-0b11982dcf4a
+      - OpenId__ClientSecret=dRc8Q~8Dme~DrXZQkMQwOOu7gsrDNurOvC4rFctx
+      - OpenId__Scopes__0=openid
+      - OpenId__Scopes__1=profile
+      - OpenId__Scopes__2=email
+      # [Recommended]
+      - AppSettings__ApplicationBaseUrl=https://onprem-arc.com
+      - AppSettings__ExternalLinksDisabled=false
+      - AppSettings__EnableClientCertificateSupport=true
+      - WorkersConfiguration__MaxConcurrentSessions=4
+      - Serilog__MinimumLevel__Default=Information
+      - Serilog__MinimumLevel__Override__Microsoft=Warning
+      - Serilog__MinimumLevel__Override__System=Warning
+      - Serilog__Using__0=Serilog.Sinks.File
+      - Serilog__WriteTo__0__Name=File
+      - Serilog__WriteTo__0__Args__path=/logs/arc-service-broker.log
+      - Serilog__WriteTo__0__Args__rollingInterval=Day
+      - Serilog__WriteTo__0__Args__rollOnFileSizeLimit=true
+      # [Not ARC]
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+    volumes:
+      - ./logs:/logs
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - arc-network
+  
+  rabbitmq:
+   image: rabbitmq:4.0.2-management
+   container_name: arc-rabbitmq
+   ports:
+    - "5672:5672"     # AMQP
+    - "15672:15672"   # Management UI
+   environment:
+    - RABBITMQ_DEFAULT_USER=admin
+    - RABBITMQ_DEFAULT_PASS=StrongPassword123
+   volumes:
+    - ./rabbitmq_delayed_message_exchange-4.0.2.ez:/plugins/rabbitmq_delayed_message_exchange-4.0.2.ez
+    - rabbitmq-data:/var/lib/rabbitmq 
+   command: >
+      bash -c "rabbitmq-plugins enable --offline rabbitmq_delayed_message_exchange &&
+               rabbitmq-server"
+   networks:
+    - arc-network
+   healthcheck:
+    test: ["CMD", "rabbitmq-diagnostics", "ping"]
+    interval: 5s
+    timeout: 3s
+    retries: 5
+    start_period: 10s
+
+volumes:
+  arc-artifacts:
+  rabbitmq-data:
+
+networks:
+  arc-network:
+    driver: bridge
