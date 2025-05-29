@@ -30,7 +30,7 @@ services:
       - WorkersConfiguration__WebApplicationRootURL=https://onprem-arc.com
       - AppSettings__ServicesInternalBaseUrl=http://127.0.0.1:81
       - AppSettings__EncryptionServiceSecret=QejfCUycW7VMqMem62rX3mow3kJM5Qa7
-      - WorkersConfiguration__SessionRunnerHostingModel=InProcess
+      - WorkersConfiguration__SessionRunnerHostingModel=ServiceBus
       - OpenId__Authority=https://login.microsoftonline.com/19e1ac19-f1a1-4b46-b5f7-5d2202c130fb/v2.0
       - OpenId__ClientId=b5079190-7cd0-4c85-b83a-0b11982dcf4a
       - OpenId__ClientSecret=dRc8Q~8Dme~DrXZQkMQwOOu7gsrDNurOvC4rFctx
@@ -91,7 +91,7 @@ services:
       - WorkersConfiguration__WebApplicationRootURL=https://onprem-arc.com
       - AppSettings__ServicesInternalBaseUrl=http://127.0.0.1:81
       - AppSettings__EncryptionServiceSecret=QejfCUycW7VMqMem62rX3mow3kJM5Qa7
-      - WorkersConfiguration__SessionRunnerHostingModel=InProcess
+      - WorkersConfiguration__SessionRunnerHostingModel=ServiceBus
       - OpenId__Authority=https://login.microsoftonline.com/19e1ac19-f1a1-4b46-b5f7-5d2202c130fb/v2.0
       - OpenId__ClientId=b5079190-7cd0-4c85-b83a-0b11982dcf4a
       - OpenId__ClientSecret=dRc8Q~8Dme~DrXZQkMQwOOu7gsrDNurOvC4rFctx
@@ -156,7 +156,7 @@ services:
       - WorkersConfiguration__WebApplicationRootURL=https://onprem-arc.com
       - AppSettings__ServicesInternalBaseUrl=http://127.0.0.1:81
       - AppSettings__EncryptionServiceSecret=QejfCUycW7VMqMem62rX3mow3kJM5Qa7
-      - WorkersConfiguration__SessionRunnerHostingModel=InProcess
+      - WorkersConfiguration__SessionRunnerHostingModel=ServiceBus
       - OpenId__Authority=https://login.microsoftonline.com/19e1ac19-f1a1-4b46-b5f7-5d2202c130fb/v2.0
       - OpenId__ClientId=b5079190-7cd0-4c85-b83a-0b11982dcf4a
       - OpenId__ClientSecret=dRc8Q~8Dme~DrXZQkMQwOOu7gsrDNurOvC4rFctx
